@@ -54,6 +54,8 @@ public class TestAnimalDatabase  {
         // When there are not any animals
         when(resultSet.next()).thenReturn(false);
         assertEquals(0,animalDatabase.numberOfAnimals());
-        verify(resultSet).getInt(1);
     }
+
+
+
 }
