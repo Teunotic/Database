@@ -11,6 +11,7 @@ public class AnimalManager {
             if (!animalDatabase.hasRecords()) {
                 animalDatabase.addDataToDB("felix", "cat");
                 animalDatabase.addDataToDB("fido", "dog");
+                animalDatabase.addDataToDB("rex", "dog");
             }
             ResultSet rs = animalDatabase.getDataFromDB();
             // Let's iterate through the java ResultSet
@@ -19,6 +20,7 @@ public class AnimalManager {
                 String type = rs.getString("type");
                 System.out.printf("%s, %s\n", name, type);
             }
+            System.out.println(animalDatabase.numberOfAnimals());
         }
         catch (SQLException e) {
             e.printStackTrace();

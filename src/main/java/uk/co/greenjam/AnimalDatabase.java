@@ -81,10 +81,27 @@ public class AnimalDatabase {
         return rs;
     }
 
+    public int numberOfAnimals() throws SQLException {
+        PreparedStatement preparedStatement = null;
+
+        String getQueryStatement = "SELECT COUNT(*) FROM " + TABLE_NAME;
+
+        preparedStatement = connection.prepareStatement(getQueryStatement);
+
+        // Execute the Query, and get a java ResultSet
+        ResultSet rs = preparedStatement.executeQuery();
+        if(rs.next()) {
+            return rs.getInt(1);
+        }
+        return 0;
+    }
+
     public boolean hasRecords() throws SQLException{
         ResultSet rs = getDataFromDB();
         return rs.next();
     }
+
+
 
     private static void log(String string) {
         System.out.println(string);
