@@ -16,13 +16,17 @@ public class AnimalDatabase {
     private Connection connection = null;
 
     public AnimalDatabase(){
-        makeJDBCConnection();
+        // Use defaults if no connection information provided
+        makeJDBCConnection(DB_URL,DB_USERNAME,DB_PASSWORD);
     }
 
+    public AnimalDatabase(String url, String username, String password){
+        makeJDBCConnection(url,username,password);
+    }
 
-    private void makeJDBCConnection(){
+    private void makeJDBCConnection(String url, String username, String password){
         driverRegistered();
-        connectDB();
+        connectDB(url,username,password);
     }
 
     private void driverRegistered()  {
@@ -35,9 +39,9 @@ public class AnimalDatabase {
         log("JDBC Driver Registered!");
     }
 
-    private void connectDB() {
+    private void connectDB(String url, String username, String password) {
         try {
-            connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
+            connection = DriverManager.getConnection(url, username, password);
             if (connection != null) {
                 log("Connection Successful!");
             } else {
@@ -75,12 +79,14 @@ public class AnimalDatabase {
         // Execute the Query, and get a java ResultSet
         ResultSet rs = preparedStatement.executeQuery();
         return rs;
+    }
 
-
+    public boolean hasRecords() throws SQLException{
+        ResultSet rs = getDataFromDB();
+        return rs.next();
     }
 
     private static void log(String string) {
         System.out.println(string);
-
     }
 }
