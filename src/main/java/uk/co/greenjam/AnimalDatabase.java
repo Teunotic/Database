@@ -14,6 +14,20 @@ public class AnimalDatabase {
     private static final String TABLE_NAME = "animals";
 
     private Connection connection = null;
+    private PreparedStatement preparedStatement = null;
+    private ResultSet resultSet = null;
+
+    protected void setConnection(Connection connection){
+        this.connection = connection;
+    }
+
+    public void setPreparedStatement(PreparedStatement preparedStatement){
+        this.preparedStatement = preparedStatement;
+    }
+
+    public void setResultSet(ResultSet resultSet){
+        this.resultSet = resultSet;
+    }
 
     public AnimalDatabase(){
         // Use defaults if no connection information provided
@@ -56,7 +70,6 @@ public class AnimalDatabase {
 
     public void addDataToDB(String name, String type) throws SQLException{
         log("adding record");
-        PreparedStatement preparedStatement = null;
 
         String insertQueryStatement = "INSERT  INTO  " + TABLE_NAME + " (name,type) values (?,?)";
 
@@ -70,38 +83,32 @@ public class AnimalDatabase {
     }
 
     public ResultSet getDataFromDB() throws SQLException {
-        PreparedStatement preparedStatement = null;
-
         String getQueryStatement = "SELECT * FROM " + TABLE_NAME;
 
         preparedStatement = connection.prepareStatement(getQueryStatement);
 
         // Execute the Query, and get a java ResultSet
-        ResultSet rs = preparedStatement.executeQuery();
-        return rs;
+        resultSet = preparedStatement.executeQuery();
+        return resultSet;
     }
 
     public int numberOfAnimals() throws SQLException {
-        PreparedStatement preparedStatement = null;
-
         String getQueryStatement = "SELECT COUNT(*) FROM " + TABLE_NAME;
 
         preparedStatement = connection.prepareStatement(getQueryStatement);
 
         // Execute the Query, and get a java ResultSet
-        ResultSet rs = preparedStatement.executeQuery();
-        if(rs.next()) {
-            return rs.getInt(1);
+        resultSet = preparedStatement.executeQuery();
+        if(resultSet.next()) {
+            return resultSet.getInt(1);
         }
         return 0;
     }
 
     public boolean hasRecords() throws SQLException{
-        ResultSet rs = getDataFromDB();
-        return rs.next();
+        resultSet = getDataFromDB();
+        return resultSet.next();
     }
-
-
 
     private static void log(String string) {
         System.out.println(string);
