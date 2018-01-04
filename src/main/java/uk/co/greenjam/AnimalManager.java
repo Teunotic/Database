@@ -4,9 +4,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class AnimalManager {
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/TEST";
-    private static final String DB_USERNAME = "root";
-    private static final String DB_PASSWORD = "password";
 
     public static void main(String[] args){
         AnimalDatabase animalDatabase = new AnimalDatabase();
