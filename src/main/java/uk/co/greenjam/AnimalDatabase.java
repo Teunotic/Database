@@ -8,42 +8,36 @@ import java.sql.SQLException;
 
 
 public class AnimalDatabase {
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/TEST";
+    private static final String DB_USERNAME = "root";
+    private static final String DB_PASSWORD = "password";
+    private static final String TABLE_NAME = "animals";
 
-    private static Connection connection = null;
-    private static PreparedStatement preparedStatement = null;
+    private Connection connection = null;
 
-    public static void main(String[] argv) {
-
-        try {
-            makeJDBCConnection();
-
-            addDataToDB("Tiger", "Cat");
-            addDataToDB("Fido", "Dog");
-
-            getDataFromDB();
-
-            preparedStatement.close();
-            connection.close();
-
-        } catch (SQLException e) {
-
-            e.printStackTrace();
-        }
+    public AnimalDatabase(){
+        makeJDBCConnection();
     }
 
-    private static void makeJDBCConnection() {
 
+    private void makeJDBCConnection(){
+        driverRegistered();
+        connectDB();
+    }
+
+    private void driverRegistered()  {
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            log("JDBC Driver Registered!");
-        } catch (ClassNotFoundException e) {
-            log("JDBC driver. Not found");
-            e.printStackTrace();
-            return;
+        } catch (ClassNotFoundException e1) {
+            e1.printStackTrace();
+            System.exit(1);
         }
+        log("JDBC Driver Registered!");
+    }
 
+    private void connectDB() {
         try {
-            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/TEST", "root", "password");
+            connection = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD);
             if (connection != null) {
                 log("Connection Successful!");
             } else {
@@ -52,51 +46,36 @@ public class AnimalDatabase {
         } catch (SQLException e) {
             log("MySQL Connection Failed!");
             e.printStackTrace();
-            return;
+            System.exit(1);
         }
-
     }
 
-    private static void addDataToDB(String name, String type) {
+    public void addDataToDB(String name, String type) throws SQLException{
         log("adding record");
-        try {
-            String insertQueryStatement = "INSERT  INTO  animals  (name,type) values (?,?)";
+        PreparedStatement preparedStatement = null;
 
-            preparedStatement = connection.prepareStatement(insertQueryStatement);
-            preparedStatement.setString(1, name);
-            preparedStatement.setString(2, type);
-            // execute insert SQL statement
-            preparedStatement.execute();
-            log( name + " added successfully");
-        } catch (
-                SQLException e) {
-            e.printStackTrace();
-        }
+        String insertQueryStatement = "INSERT  INTO  " + TABLE_NAME + " (name,type) values (?,?)";
+
+        preparedStatement = connection.prepareStatement(insertQueryStatement);
+        preparedStatement.setString(1, name);
+        preparedStatement.setString(2, type);
+        // execute insert SQL statement
+        preparedStatement.execute();
+        log( name + " added successfully");
+
     }
 
-    private static void getDataFromDB() {
+    public ResultSet getDataFromDB() throws SQLException {
+        PreparedStatement preparedStatement = null;
 
-        try {
-            String getQueryStatement = "SELECT * FROM animals";
+        String getQueryStatement = "SELECT * FROM " + TABLE_NAME;
 
-            preparedStatement = connection.prepareStatement(getQueryStatement);
+        preparedStatement = connection.prepareStatement(getQueryStatement);
 
-            // Execute the Query, and get a java ResultSet
-            ResultSet rs = preparedStatement.executeQuery();
+        // Execute the Query, and get a java ResultSet
+        ResultSet rs = preparedStatement.executeQuery();
+        return rs;
 
-            // Let's iterate through the java ResultSet
-            while (rs.next()) {
-                String name = rs.getString("name");
-                String type = rs.getString("type");
-
-                System.out.printf("%s, %s\n", name, type);
-            }
-
-        } catch (
-
-                SQLException e) {
-            e.printStackTrace();
-        }
 
     }
 
